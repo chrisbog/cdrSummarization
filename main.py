@@ -2,21 +2,22 @@ import pandas as pd
 import openpyxl
 from openpyxl.styles import Color, Fill, Font, Alignment
 import time
+import os
 
 
 
 def process_spreadsheet(phonedbname,filenames):
     print('===================================================================================')
-    print ('Reading in phone database from '+phonedbname)
+    print (f"Reading in phone database from {phonedbname}")
     db = pd.read_csv(phonedbname, usecols=['phonename', 'model','branch'])
     # Example on How to Search search = db[db['phonename'] == 'SEP88755651F5D5']
     print(f'Total Number of Phones in Database: {db.shape[0]}')
 
     cdr_df =[]
     for cdr in filenames:
-        print('Loading in the CDR Records - Original File'+cdr)
+        print(f'Loading in the CDR Records - Original File: {cdr}')
         df = pd.read_csv(cdr,usecols=['origDeviceName','duration','dateTimeOrigination'])
-        print(f'Total Number of CDR Records {df.shape[0]}')
+        print(f'Total Number of CDR Records: {df.shape[0]}')
         cdr_df.append(df)
 
     # Concatenate the multiple CDR files
@@ -38,7 +39,7 @@ def process_spreadsheet(phonedbname,filenames):
     mergeddf = pd.merge(cdrs,db,left_on='origDeviceName',right_on='phonename')
 
     notmerged = cdrs[~cdrs['origDeviceName'].isin(db['phonename'])]
-    print (notmerged)
+    #print (notmerged)
 
 
 
@@ -61,7 +62,7 @@ def process_spreadsheet(phonedbname,filenames):
     groupedbyday = groupedbyday.sort_values(by=['branch','day'])
 
     unknown = notmerged.groupby(['origDeviceName'])['duration'].agg(['sum','count'])
-    print (unknown)
+    #print (unknown)
 
     headertext = "Dates: " + min + ' to '+ max
 
@@ -138,9 +139,35 @@ def process_spreadsheet(phonedbname,filenames):
 
 if __name__ == '__main__':
 
-    phonedbname = 'phonedb.csv'
+    print("Cisco CDR Summarization")
+    print("For more details, please look at the github repository at: https://github.com/chrisbog/cdrSummarization")
+    print("")
+
     filenames=["Cluster1CDR.txt","Cluster2CDR.txt"]
-#    filenames=["Cluster1CDR-short.txt","Cluster2CDR-short.txt"]
+
+    phonedbname = input("Enter the Phone Data Base Filename [phonedb.csv]: ")
+    if phonedbname == "":
+        phonedbname = 'phonedb.csv'
+
+    if os.path.isfile(phonedbname) == False:
+        print (f"ERROR: {phonedbname} does not exist, please correct.")
+        exit()
+
+    numberofcdr = input("How many CDR files do you have [1]?:  ")
+    if numberofcdr.isdigit():
+        numberofcdr = int(numberofcdr)
+    else:
+        numberofcdr = 1
+
+    filenames=[]
+    for count in range(numberofcdr):
+        filename = input("Enter CDR File #"+str(count+1)+": ")
+
+        if os.path.isfile(filename) == False:
+            print(f"ERROR: {filename} does not exist, please correct.")
+            exit()
+        else:
+            filenames.append(filename)
 
     process_spreadsheet(phonedbname, filenames)
 
