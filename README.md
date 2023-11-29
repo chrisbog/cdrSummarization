@@ -1,12 +1,19 @@
 # cdrSummarization
 This is a Python Script that will take CDR records from Cisco Communications Manager and provide a summarization of the CDR data. 
 
+# Requirements
+This module leverages python 3 and pandas and openpyxl libraries are required.
+
+You can install the required libraries by:
+
+```
+pip -f requirements.txt
+```
 
 # Prerequistes
 Due to the size of the CDR data files, this file uses Pandas as the processing library behind the scenes.   We also use the openpyxl library to assist in formating the output spreadhseet.
 
 The prerequisites of the script is get the CDR records from CUCM in .csv format.   In addition, we are requiring another file called phonedb.csv. This file has the following format:
-
 
 ```commandline
 phonename,model,branch
@@ -16,8 +23,12 @@ SEP333333333333,Cisco 7962,Branch3
 .
 .
 .
-
 ```
+The phonedb.csv file has three fields:
+* phonename - This field is the phone identifier
+* model - This field allows you to specify the type of phone 
+* branch - This field allows you to identify a location of where the phone is placed
+
 
 # Script Details
 This script will use the phonedb.csv to correlate each branch location to the CDR records.
