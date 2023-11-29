@@ -1,7 +1,7 @@
 # cdrSummarization
 This is a Python Script that will take CDR records from Cisco Communications Manager and provide a summarization of the CDR data. 
 
-# Requirements
+## Requirements
 This module leverages python 3 and pandas and openpyxl libraries are required.
 
 You can install the required libraries by:
@@ -10,7 +10,7 @@ You can install the required libraries by:
 pip -f requirements.txt
 ```
 
-# Prerequistes
+## Prerequistes
 Due to the size of the CDR data files, this file uses Pandas as the processing library behind the scenes.   We also use the openpyxl library to assist in formating the output spreadhseet.
 
 The prerequisites of the script is get the CDR records from CUCM in .csv format.   In addition, we are requiring another file called phonedb.csv. This file has the following format:
@@ -25,17 +25,17 @@ SEP333333333333,Cisco 7962,Branch3
 .
 ```
 The phonedb.csv file has three fields:
-* phonename - This field is the phone identifier
-* model - This field allows you to specify the type of phone 
-* branch - This field allows you to identify a location of where the phone is placed
+* **phonename** - This field is the phone identifier
+* **model** - This field allows you to specify the type of phone 
+* **branch** - This field allows you to identify a location of where the phone is placed
 
 
-# Script Details
+## Script Details
 This script will use the phonedb.csv to correlate each branch location to the CDR records.
 
 The summarization includes will create an Excel Spreadsheet with multiple tabs.   The following describes each Tab:
 
-CDR Summary Tab - This tab shows a report broken down by branch and phone type within the branch and number of calls and duration.
+**CDR Summary Tab** - This tab shows a report broken down by branch and phone type within the branch and number of calls and duration.
 ```commandline
 CDR Summary Report
 
@@ -50,7 +50,7 @@ Branch1 Cisco 7962      SEP111111111111         100             2
 Branch2 Cisco 8531      SEP888888888888         200             5        
 ```
 
-CDR Summary By Day - This tab shows a report that is broken down by branch and the number of calls and duration by day.
+**CDR Summary By Day** - This tab shows a report that is broken down by branch and the number of calls and duration by day.
 ```
  CDR Summary Report By Day
 Dates: Tuesday 2023-08-22 09:02:51 to Friday 2023-10-20 09:56:55
@@ -71,7 +71,7 @@ Branch2 Monday          5              2
         Friday          3              1      
 ```
 
-Unknown CDR Records - This tab shows a report that reports on phone devices that are in the CDR records but not in the phonedb.csv file.
+**Unknown CDR Records** - This tab shows a report that reports on phone devices that are in the CDR records but not in the phonedb.csv file.
 ```
 Unknown CDR Records
 Dates: Tuesday 2023-08-22 09:02:51 to Friday 2023-10-20 09:56:55
