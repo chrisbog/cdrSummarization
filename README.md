@@ -76,7 +76,7 @@ Branch2 Monday          5              2
 Unknown CDR Records
 Dates: Tuesday 2023-08-22 09:02:51 to Friday 2023-10-20 09:56:55
 
-Branch  Day         Total Call
+Phone Device ID     Total Call
                     Duration        Number of
                     (seconds)         Calls
                                             
@@ -85,12 +85,46 @@ SEPABABABABABAB       11              10
 SEP1B1B1B1B1B1B       200             11   
 ```
 
+**Inbound Breakdown** - This tab shows a report that presents the inbound calls.   In our cluster the inbound calls are identified from the source: SIP-TRUNK-TO-SME. This tab breaks down these calls.
+```
+Inbound Breakdown
+Dates: Tuesday 2023-08-22 09:02:51 to Friday 2023-10-20 09:56:55
 
-The current version is hardcoded with two CDR files. In my customer, we had two clusters, so there would be two CDR Files to be generated.  You can name the two files the following:
+
+Branch          Phone Model     Source of Call    Destination Phone    Total Call
+                                                                        Duration        Number of
+                                                                        (seconds)         Calls
+                                            
+Branch1            7962         SIP-TRUNK-TO-SME      SEP888888888888       10              2
+                                                      SEPABABABABABAB       11              10
+                                                      SEP1B1B1B1B1B1B       200             11   
+```
+
+
+The current version allows you to specify the number of CDR files. In my customer, we had two clusters, so there would be two CDR Files to be generated.  The following is an example of the script when it is run.
 
 ```commandline
-Cluster1CDR.txt
-Cluster2CDR.txt
+Cisco CDR Summarization
+For more details, please look at the github repository at: https://github.com/chrisbog/cdrSummarization
+
+Enter the Phone Data Base Filename [phonedb.csv]: 
+How many CDR files do you have [1]?:  2
+Enter CDR File #1: Cluster1CDR.txt
+Enter CDR File #2: Cluster2CDR.txt
+===================================================================================
+Reading in phone database from phonedb.csv
+Total Number of Phones in Database: 28551
+Loading in the CDR Records - Original File: Cluster1CDR.txt
+Total Number of CDR Records: 1998829
+Loading in the CDR Records - Original File: Cluster2CDR.txt
+Total Number of CDR Records: 1775983
+CDR Summary from Tuesday 2023-08-22 09:02:51 to Friday 2023-10-20 09:56:55
+Total Number of original CDR Entries: 3774812
+Total Number of known CDR Entries: 1999775
+Total Number of Unknown CDR Entries: 1775037
+Writing Output File: CDRSummary.xlsx
+Formatting Final Spreadsheet
+
 ```
 
 Once the script will run, it will produce a single Excel summary report with the following output name:

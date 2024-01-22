@@ -16,7 +16,7 @@ def process_spreadsheet(phonedbname,filenames):
     cdr_df =[]
     for cdr in filenames:
         print(f'Loading in the CDR Records - Original File: {cdr}')
-        df = pd.read_csv(cdr,usecols=['origDeviceName','duration','dateTimeOrigination'])
+        df = pd.read_csv(cdr,usecols=['origDeviceName','duration','dateTimeOrigination','origDeviceName','destDeviceName'])
         print(f'Total Number of CDR Records: {df.shape[0]}')
         cdr_df.append(df)
 
@@ -55,8 +55,18 @@ def process_spreadsheet(phonedbname,filenames):
     mergeddf = mergeddf.drop('phonename',axis=1)
     mergeddf = mergeddf.drop('datetime',axis=1)
 
+
+
     newdf = mergeddf.groupby(['branch','model','origDeviceName'])['duration'].agg(['sum','count'])
     sorteddf = newdf.sort_values(by=['branch','model'])
+
+    # Try to find the SIP-TRUNK-TO-SME
+    tempdf = notmerged[notmerged['origDeviceName'] == 'SIP-TRUNK-TO-SME']
+    mergeinbound = pd.merge(tempdf, db, left_on='destDeviceName', right_on='phonename')
+    #print(mergeinbound)
+    smeinbounddf = mergeinbound.groupby(['branch','model','origDeviceName','destDeviceName'])['duration'].agg(['sum','count'])
+    #print(smeinbounddf)
+
 
     groupedbyday = mergeddf.groupby(['branch','day'])['duration'].agg(['sum','count'])
     groupedbyday = groupedbyday.sort_values(by=['branch','day'])
@@ -73,6 +83,7 @@ def process_spreadsheet(phonedbname,filenames):
         sorteddf.to_excel(writer,sheet_name='CDR Summary',startrow=4)
         groupedbyday.to_excel(writer,sheet_name='CDR Summary By Day',startrow=4)
         unknown.to_excel(writer,sheet_name='Unknown CDR Records', startrow=4)
+        smeinbounddf.to_excel(writer,sheet_name='Inbound Breakdown',startrow=4)
     print ("Formatting Final Spreadsheet")
     workbook = openpyxl.load_workbook(outputfile)
     sheet = workbook['CDR Summary']
@@ -134,6 +145,33 @@ def process_spreadsheet(phonedbname,filenames):
     sheet['B5'].font = Font(size=12,bold=True)
     sheet.column_dimensions['B'].width = 12
     sheet['B5'].alignment = Alignment(wrap_text=True,horizontal='center')
+
+    sheet = workbook['Inbound Breakdown']
+    sheet['A1'] = "Inbound Breakdown"
+    sheet['A3'] = headertext
+    sheet['A1'].font = Font(size=16, bold=True)
+    sheet['A3'].font = Font(size=16, bold=True)
+    sheet['A5'] = "Branch"
+    sheet['A5'].font = Font(size=12,bold=True)
+    sheet.column_dimensions['A'].width = 12
+    sheet['B5'] = "Phone Model"
+    sheet.column_dimensions['B'].width = 12
+    sheet['B5'].font = Font(size=12,bold=True)
+    sheet['C5'] = "Source of Call"
+    sheet['C5'].font = Font(size=12,bold=True)
+    sheet.column_dimensions['C'].width = 20
+    sheet['D5'] = "Destination Phone"
+    sheet['D5'].font = Font(size=12,bold=True)
+    sheet.column_dimensions['D'].width = 20
+    sheet['E5'] = 'Total Call Duration (seconds)'
+    sheet['E5'].font = Font(size=12,bold=True)
+    sheet['E5'].alignment = Alignment(wrap_text=True,horizontal='center')
+    sheet.column_dimensions['E'].width = 12
+    sheet['F5'] = 'Number of Calls'
+    sheet['F5'].font = Font(size=12,bold=True)
+    sheet.column_dimensions['F'].width = 12
+    sheet['F5'].alignment = Alignment(wrap_text=True,horizontal='center')
+
 
     workbook.save(filename=outputfile)
 
